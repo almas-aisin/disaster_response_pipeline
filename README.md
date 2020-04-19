@@ -2,8 +2,6 @@
 
 ## Disaster Response Pipeline Project
 
-## Table of Contents
-
 - [Project Overview](#overview)
 - [Project Steps](#steps)
   - [ETL Pipeline](#etl_pipeline)

@@ -1,6 +1,5 @@
 import sys
 
-
 import pandas as pd
 import sqlite3
 from sqlalchemy import create_engine
@@ -27,9 +26,8 @@ def load_data(database_filepath):
     X = df['message'].values
     Y = df.iloc[:, 4:].values
     category_names = list(df.columns[4:])
-    
-    return X, Y, category_names
 
+    return X, Y, category_names
 
 def tokenize(text):
     tokens = word_tokenize(text)
@@ -44,22 +42,29 @@ def tokenize(text):
 
 
 def build_model():
-    model = Pipeline([
+    pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
         ('clf', MultiOutputClassifier(RandomForestClassifier(), n_jobs=-1)),
     ])
-    
+
+    parameters = {
+        'vect__ngram_range': ((1, 1), (1, 2)),
+        'vect__max_df': (0.75, 1.0)
+    }
+
+    model = GridSearchCV(estimator=pipeline, param_grid=parameters, verbose=3, cv=3)
+
     return model
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
     Y_pred = model.predict(X_test)
-    
+
     for i in range(36):
         print('Category: {}'.format(category_names[i]))
         print(classification_report(Y_test[:, i], Y_pred[:, i]))
-    
+
     f1_total = []
 
     for i in range(36):
@@ -80,13 +85,13 @@ def main():
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
         X, Y, category_names = load_data(database_filepath)
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
-        
+
         print('Building model...')
         model = build_model()
-        
+
         print('Training model...')
         model.fit(X_train, Y_train)
-        
+
         print('Evaluating model...')
         evaluate_model(model, X_test, Y_test, category_names)
 

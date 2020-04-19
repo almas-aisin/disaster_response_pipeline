@@ -5,7 +5,7 @@
 ## Table of Contents
 
 - [Project Overview](#overview)
-- [Project Components](#components)
+- [Project Steps](#steps)
   - [ETL Pipeline](#etl_pipeline)
   - [ML Pipeline](#ml_pipeline)
   - [Flask Web App](#flask)
@@ -17,11 +17,13 @@
 
 ## 1. Project Overview
 
-This project based on disaster data from <a href="https://www.figure-eight.com/" target="_blank">Figure Eight</a> where we can build a model for an API that classifies disaster messages.
+This project based on disaster data from <a href="https://www.figure-eight.com/" target="_blank">Figure Eight</a> where we can build a model that classifies disaster messages.
 
-_data_ directory contains a data set with messages that were sent during disaster events.
+_data_ contains datasets with messages that were sent during disaster events and categories which have train data.
 
-This project include a web app that classifies the message in several categories.
+_model_ contains NLP classifier, which can determine messages in several categories.
+
+_app_ includes a Flask web app that runs trained model and visualization.
 
 <a id='components'></a>
 
@@ -33,9 +35,9 @@ This project include a web app that classifies the message in several categories
 
 File _data/process_data.py_ contains data cleaning pipeline that:
 
-- Loads the `messages.csv` and `categories.csv` dataset
-- Cleans and merges the two datasets
-- Stores it in a **SQLite database**
+- Loads the `messages.csv` and `categories.csv` datasets
+- Cleans and merges them together
+- Stores new dataset in a **SQLite database**
 
 <a id='ml_pipeline'></a>
 
@@ -55,7 +57,7 @@ File _models/train_classifier.py_ contains machine learning pipeline that:
 ### 2.3. Flask Web App
 
 - Shows statictics about disasters
-- Classifies the message in several categories.
+- Classifies the message in several categories
 
 <a id='files'></a>
 
@@ -64,19 +66,19 @@ File _models/train_classifier.py_ contains machine learning pipeline that:
 <pre>
 .
 ├── app
-│   ├── run.py------------------------# FLASK FILE THAT RUNS APP
+│   ├── run.py
 │   ├── static
-│   │   └── favicon.ico---------------# FAVICON FOR THE WEB APP
+│   │   └── favicon.ico
 │   └── templates
-│       ├── go.html-------------------# CLASSIFICATION RESULT PAGE OF WEB APP
-│       └── master.html---------------# MAIN PAGE OF WEB APP
+│       ├── go.html
+│       └── master.html
 ├── data
-│   ├── DisasterResponse.db-----------# DATABASE TO SAVE CLEANED DATA TO
-│   ├── disaster_categories.csv-------# DATA TO PROCESS
-│   ├── disaster_messages.csv---------# DATA TO PROCESS
-│   └── process_data.py---------------# PERFORMS ETL PROCESS
+│   ├── DisasterResponse.db
+│   ├── disaster_categories.csv
+│   ├── disaster_messages.csv
+│   └── process_data.py
 ├── models
-│   ├── train_classifier.py-----------# PERFORMS CLASSIFICATION TASK
-│   └── classifier.pkl----------------# CLASSIFICATOR
+│   ├── train_classifier.py
+│   └── classifier.pkl
 
 </pre>

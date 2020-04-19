@@ -57,6 +57,8 @@ File _models/train_classifier.py_ contains machine learning pipeline that:
 - Shows statictics about disasters
 - Classifies the message in several categories.
 
+<a id='files'></a>
+
 ## 3. Files
 
 <pre>

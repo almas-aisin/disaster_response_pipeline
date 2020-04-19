@@ -6,35 +6,39 @@ from sqlalchemy import create_engine
 
 
 def load_data(messages_filepath, categories_filepath):
+    """ Loding data from .csv files and cleaming """
     messages = pd.read_csv(messages_filepath)
     categories = pd.read_csv(categories_filepath)
-    
+
     cat_df = pd.DataFrame.from_records(list(categories.categories.str.split(';')))
     for i in range(36):
         cat_df[i] = cat_df[i].str.replace('-\d', '')
     cat_df = cat_df.drop_duplicates()
     cat_clos = list(cat_df.loc[0,:])
-    
+
     categories.categories = categories.categories.str.split(';')
     categories[cat_clos] = pd.DataFrame(categories.categories.values.tolist(), index=categories.index)
     categories = categories.drop(columns=['categories'])
     for col in cat_clos:
         categories[col] = categories[col].str.replace('\D', '').astype(int)
 
+
     df = messages.merge(categories, on='id')
-    
+
     return df
 
 
 def clean_data(df):
+    """ Dropping duplicates """
     df = df.drop_duplicates()
-    
+
     return df
 
 
 def save_data(df, database_filename):
+    """ Saving data into SQLite database """
     engine = create_engine('sqlite:///{}'.format(database_filename))
-    df.to_sql('mess_cat', engine, index=False)  
+    df.to_sql('mess_cat', engine, index=False)
 
 
 def main():
@@ -48,12 +52,12 @@ def main():
 
         print('Cleaning data...')
         df = clean_data(df)
-        
+
         print('Saving data...\n    DATABASE: {}'.format(database_filepath))
         save_data(df, database_filepath)
-        
+
         print('Cleaned data saved to database!')
-    
+
     else:
         print('Please provide the filepaths of the messages and categories '\
               'datasets as the first and second argument respectively, as '\

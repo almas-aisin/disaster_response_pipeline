@@ -21,6 +21,7 @@ nltk.download(['punkt', 'wordnet', 'averaged_perceptron_tagger'])
 
 
 def load_data(database_filepath):
+    """ Loading data from database, and defining X, Y and category_names """
     engine = create_engine('sqlite:///{}'.format(database_filepath))
     df = pd.read_sql_table('mess_cat', 'sqlite:///{}'.format(database_filepath))
     X = df['message'].values
@@ -30,6 +31,7 @@ def load_data(database_filepath):
     return X, Y, category_names
 
 def tokenize(text):
+    """ Tokenization part """
     tokens = word_tokenize(text)
     lemmatizer = WordNetLemmatizer()
 
@@ -42,23 +44,27 @@ def tokenize(text):
 
 
 def build_model():
+    """ Biulding pipeline """
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
         ('clf', MultiOutputClassifier(RandomForestClassifier(), n_jobs=-1)),
     ])
 
+    """ Choosing various parameters """
     parameters = {
         'vect__ngram_range': ((1, 1), (1, 2)),
         'vect__max_df': (0.75, 1.0)
     }
 
+    """ Using Greed Search to fit best parameters """
     model = GridSearchCV(estimator=pipeline, param_grid=parameters, verbose=3, cv=3)
 
     return model
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
+    """ Evaluationg model """
     Y_pred = model.predict(X_test)
 
     for i in range(36):
@@ -76,6 +82,7 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
+    """ Converting model into pickle file """
     pickle.dump(model,open(model_filepath,'wb'))
 
 
